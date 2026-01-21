@@ -24,7 +24,7 @@ function App() {
     <div>
       <h1 className='App-header'>uPick</h1>
       {cuisines.length > 2 ? (
-        <div>
+        <div className='Center'>
           {cuisines.map(cuisine => (
             <button className='Button' key={cuisine} onClick={() => removeCuisine(cuisine)}>
               {cuisine} ❌
@@ -33,10 +33,12 @@ function App() {
         </div>
       ) : (
         <div>
-          <h2>Winner: {cuisines.join(' or ')}</h2>
-          <button className='Button' onClick={() => reset()}>Reset</button>
+          <h2 className='App-header'>Winner: {cuisines.join(' or ')}</h2>
         </div>
       )}
+      <div className='Center'>
+          <button className='Button' onClick={() => reset()}>Reset</button>
+      </div>
     </div>
   );
 }
