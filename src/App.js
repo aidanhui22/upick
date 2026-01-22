@@ -9,16 +9,20 @@ function App() {
   ]);
 
   const [location, setLocation] = useState('');
+
+  const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState('');
+
   const handleChange = (e) => {
     setLocation(e.target.value);
   }
 
-  const [eateries, setEateries] = useState([]);
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Location submitted: ${location}`);
+  const onSubmit = () => {
     getPlaces(location, cuisines);
   }
+
+  const [eateries, setEateries] = useState([]);
 
   const removeCuisine = (cuisineToRemove) => {
     setCuisines(cuisines.filter(c => c !== cuisineToRemove));
@@ -30,10 +34,14 @@ function App() {
       "Thai", "Indian", "Korean", "Vietnamese", 
       "Greek", "American"
     ]);
+    setEateries([]);
+    setLocation('');
   };
 
   const getPlaces = async(location, cuisines) => {
     const textQuery = `${cuisines[0]} and ${cuisines[1]} restaurants in ${location}`;
+    setError('');
+    setLoading(true);
     try {
       const response = await fetch("https://places.googleapis.com/v1/places:searchText", {
       method: "POST",
@@ -51,6 +59,9 @@ function App() {
       setEateries(data.places);
     } catch (error) {
         console.error(error.message);
+        setError('Failed to find restaurants, try again');
+    } finally {
+      setLoading(false);
     }
   }
   return (
@@ -69,16 +80,16 @@ function App() {
           <h2 className='App-header'>Winner: {cuisines.join(' or ')}</h2>
         </div>
       )}
+      {cuisines.length === 2 && (
       <div className='Center'>
-        <form onSubmit={handleSubmit}>
-          <label>
-            Enter current location: <input type="text" value={location} onChange={handleChange} />
-          </label>
-          <button type="submit">Submit</button>
-        </form>
+        Enter current location <input type="text" value={location} onChange={handleChange} 
+          onKeyDown={(e) => e.key === 'Enter' && location.length > 3 && onSubmit()}/>
+        {location.length > 3 && (<button type="button" onClick={onSubmit}>Submit</button>)}
       </div>
+      )}
+      {loading && <p>Finding restaurants...</p>}
       {eateries.length > 0 && (
-      <div>
+      <div className='Table'>
         <h3>Restaurants:</h3>
         {eateries.map((place, index) => (
           <div key={index}>
@@ -88,8 +99,9 @@ function App() {
         ))}
       </div>
       )}
+      {error && <p className='Error'>{error}</p>}
       <div className='Center'>
-          <button className='Button' onClick={() => reset()}>Reset</button>
+          {cuisines.length < 10 && (<button className='Button' onClick={() => reset()}>Reset</button>)}
       </div>
     </div>
   );
