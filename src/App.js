@@ -14,13 +14,21 @@ function App() {
 
   const [error, setError] = useState('');
 
+  // const [finalWinner, setFinalWinner] = useState('');
+  
+  // const spinWheel = () => {
+  //   const randomIndex = Math.floor(Math.random() * cuisines.length);
+  //   setFinalWinner(cuisines[randomIndex]);
+  // };
+
   const handleChange = (e) => {
     setLocation(e.target.value);
-  }
+  };
 
   const onSubmit = () => {
+    setEateries([]);
     getPlaces(location, cuisines);
-  }
+  };
 
   const [eateries, setEateries] = useState([]);
 
@@ -39,9 +47,9 @@ function App() {
   };
 
   const getPlaces = async(location, cuisines) => {
-    const textQuery = `${cuisines[0]} and ${cuisines[1]} restaurants in ${location}`;
     setError('');
     setLoading(true);
+    const textQuery = `${cuisines[0]} and ${cuisines[1]} restaurants in ${location}`;
     try {
       const response = await fetch("https://places.googleapis.com/v1/places:searchText", {
       method: "POST",
@@ -49,7 +57,7 @@ function App() {
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-        'X-Goog-FieldMask': 'places.displayName,places.formattedAddress',
+        'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.rating',
       }
       });
       if (!response.ok) {
@@ -66,7 +74,7 @@ function App() {
   }
   return (
     <div>
-      <h1 className='App-header'>uPick</h1>
+      <h1 className='Header'>uPick</h1>
       {cuisines.length > 2 ? (
         <div className='Center'>
           {cuisines.map(cuisine => (
@@ -77,31 +85,40 @@ function App() {
         </div>
       ) : (
         <div>
-          <h2 className='App-header'>Winner: {cuisines.join(' or ')}</h2>
+          <h2 className='Header'>Winner: {cuisines.join(' or ')}</h2>
         </div>
       )}
-      {cuisines.length === 2 && (
-      <div className='Center'>
-        Enter current location <input type="text" value={location} onChange={handleChange} 
-          onKeyDown={(e) => e.key === 'Enter' && location.length > 3 && onSubmit()}/>
-        {location.length > 3 && (<button type="button" onClick={onSubmit}>Submit</button>)}
+      <div className='container'>
+        {cuisines.length === 2 && (
+          <div className='Eatery-card'>
+            <strong style={{padding:"2%"}}>Enter current location</strong> 
+            <input type="text" className='search' value={location} onChange={handleChange} 
+              onKeyDown={(e) => e.key === 'Enter' && location.length > 3 && onSubmit()}/>
+          {location.length > 3 && (<button type="button" className='Button' onClick={onSubmit}>Submit</button>)}
       </div>
       )}
-      {loading && <p>Finding restaurants...</p>}
-      {eateries.length > 0 && (
-      <div className='Table'>
-        <h3>Restaurants:</h3>
-        {eateries.map((place, index) => (
-          <div key={index}>
-            <p>{place.displayName?.text}</p>
-            <p>{place.formattedAddress}</p>
+      </div>
+      {loading && <strong className='Header'>Finding restaurants...</strong>}
+      <div className='container'>
+        {eateries.length > 0 && eateries.map((place, index) => (
+          <div key={index} className='Eatery-card'>
+            <p className='Center'><strong>{place.displayName?.text}</strong></p>
+            <p className='Center'>{place.formattedAddress}</p>
+            <p className='Center'>{place.rating} ★</p>
+            <a 
+              style={{paddingBottom:"10px"}}
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.displayName?.text + ' ' + place.formattedAddress + ' ' + place.rating)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Open in Google Maps →
+            </a>
           </div>
         ))}
       </div>
-      )}
       {error && <p className='Error'>{error}</p>}
       <div className='Center'>
-          {cuisines.length < 10 && (<button className='Button' onClick={() => reset()}>Reset</button>)}
+          {cuisines.length < 10 && !loading && (<button className='Button' onClick={() => reset()}>Reset</button>)}
       </div>
     </div>
   );
