@@ -3,9 +3,9 @@ import './App.css';
 
 function App() {
   const [cuisines, setCuisines] = useState([
-    "Italian", "Mexican", "Chinese", "Japanese", 
-    "Thai", "Indian", "Korean", "Vietnamese", 
-    "Greek", "American"
+    "🍝 🇮🇹 ITALIAN", "🌮 🇲🇽 MEXICAN", "🥡 🇨🇳 CHINESE", "🍱 🇯🇵 JAPANESE", 
+    "🍜 🇹🇭 THAI", "🫓 🇮🇳 INDIAN", "🍢 🇰🇷 KOREAN", "🍚 🇻🇳 VIETNAMESE", 
+    "🥙 🇬🇷 GREEK", "🍔 🇺🇸 AMERICAN"
   ]);
 
   const [location, setLocation] = useState('');
@@ -38,10 +38,10 @@ function App() {
 
   const reset = () => {
     setCuisines([
-      "Italian", "Mexican", "Chinese", "Japanese", 
-      "Thai", "Indian", "Korean", "Vietnamese", 
-      "Greek", "American"
-    ]);
+    "🍝 🇮🇹 Italian", "🌮 🇲🇽 Mexican", "🥡 🇨🇳 Chinese", "🍱 🇯🇵 Japanese", 
+    "🍜 🇹🇭 Thai", "🫓 🇮🇳 Indian", "🍢 🇰🇷 Korean", "🍚 🇻🇳 Vietnamese", 
+    "🥙 🇬🇷 Greek", "🍔 🇺🇸 American"
+  ]);
     setEateries([]);
     setLocation('');
   };
@@ -74,18 +74,18 @@ function App() {
   }
   return (
     <div>
-      <h1 className='Header'>uPick</h1>
+      <h1 className='Header'>🫵 uPick 🫵</h1>
       {cuisines.length > 2 ? (
-        <div className='Center'>
+        <div className='Food-container'>
           {cuisines.map(cuisine => (
-            <button className='Button' key={cuisine} onClick={() => removeCuisine(cuisine)}>
+            <button className='Food-items' key={cuisine} onClick={() => removeCuisine(cuisine)}>
               {cuisine} ❌
             </button>
           ))}
         </div>
       ) : (
         <div>
-          <h2 className='Header'>Winner: {cuisines.join(' or ')}</h2>
+          <h2 className='Winner'>Winner: {cuisines.join(' or ')}</h2>
         </div>
       )}
       <div className='container'>
@@ -94,9 +94,11 @@ function App() {
             <strong style={{padding:"2%"}}>Enter current location</strong> 
             <input type="text" className='search' value={location} onChange={handleChange} 
               onKeyDown={(e) => e.key === 'Enter' && location.length > 3 && onSubmit()}/>
-          {location.length > 3 && (<button type="button" className='Button' onClick={onSubmit}>Submit</button>)}
       </div>
       )}
+      <div className='Center'>      
+        {location.length > 3 && (<button type="button" className='Submit' onClick={onSubmit}>Submit</button>)}
+      </div>
       </div>
       {loading && <strong className='Header'>Finding restaurants...</strong>}
       <div className='container'>
@@ -118,7 +120,7 @@ function App() {
       </div>
       {error && <p className='Error'>{error}</p>}
       <div className='Center'>
-          {cuisines.length < 10 && !loading && (<button className='Button' onClick={() => reset()}>Reset</button>)}
+          {cuisines.length < 10 && !loading && (<button className='Reset-button' onClick={() => reset()}>♻️ RESET ♻️</button>)}
       </div>
     </div>
   );
