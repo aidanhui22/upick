@@ -2,17 +2,21 @@ import { useState } from 'react';
 import './App.css';
 
 function App() {
-  const [cuisines, setCuisines] = useState([
+  const CUISINES_CONST = [
     "🍝 🇮🇹 ITALIAN", "🌮 🇲🇽 MEXICAN", "🥡 🇨🇳 CHINESE", "🍱 🇯🇵 JAPANESE", 
     "🍜 🇹🇭 THAI", "🫓 🇮🇳 INDIAN", "🍢 🇰🇷 KOREAN", "🍚 🇻🇳 VIETNAMESE", 
     "🥙 🇬🇷 GREEK", "🍔 🇺🇸 AMERICAN"
-  ]);
+  ];
+
+  const [cuisines, setCuisines] = useState(CUISINES_CONST);
 
   const [location, setLocation] = useState('');
 
   const [loading, setLoading] = useState(false);
 
   const [error, setError] = useState('');
+
+  // **May add wheel feature to nail down to one cuisine in future.**
 
   // const [finalWinner, setFinalWinner] = useState('');
   
@@ -37,11 +41,7 @@ function App() {
   };
 
   const reset = () => {
-    setCuisines([
-    "🍝 🇮🇹 Italian", "🌮 🇲🇽 Mexican", "🥡 🇨🇳 Chinese", "🍱 🇯🇵 Japanese", 
-    "🍜 🇹🇭 Thai", "🫓 🇮🇳 Indian", "🍢 🇰🇷 Korean", "🍚 🇻🇳 Vietnamese", 
-    "🥙 🇬🇷 Greek", "🍔 🇺🇸 American"
-  ]);
+    setCuisines(CUISINES_CONST);
     setEateries([]);
     setLocation('');
   };
