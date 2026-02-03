@@ -16,6 +16,7 @@ Groups struggle to decide on restaurants. uPick streamlines this by:
 
 - Interactive cuisine elimination
 - Real-time Google Places API integration
+- Filter by maximum price per person
 - Restaurant details (name, address, rating)
 - Direct Google Maps links
 - Clean, responsive UI
@@ -42,7 +43,6 @@ npm start
 ## Future Plans
 
 - Wheel spinner for final selection
-- Filter by price/rating
 
 ---
 
