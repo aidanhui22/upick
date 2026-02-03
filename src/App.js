@@ -16,6 +16,8 @@ function App() {
 
   const [error, setError] = useState('');
 
+  const [price, setPrice] = useState([]);
+
   // **May add wheel feature to nail down to one cuisine in future.**
 
   // const [finalWinner, setFinalWinner] = useState('');
@@ -25,8 +27,30 @@ function App() {
   //   setFinalWinner(cuisines[randomIndex]);
   // };
 
-  const handleChange = (e) => {
+  const handleLocation = (e) => {
     setLocation(e.target.value);
+  };
+
+  const getPriceLevel = (maxPrice) => {
+    console.log(maxPrice);
+    if (maxPrice <= 10) {
+      return ["PRICE_LEVEL_INEXPENSIVE"];
+    }
+    if (maxPrice <= 30) {
+      return ["PRICE_LEVEL_INEXPENSIVE", "PRICE_LEVEL_MODERATE"];
+    }
+    if (maxPrice < 50) {
+      return ["PRICE_LEVEL_INEXPENSIVE", "PRICE_LEVEL_MODERATE", "PRICE_LEVEL_EXPENSIVE"];
+    }
+    if (maxPrice >= 50) {
+      return ["PRICE_LEVEL_INEXPENSIVE", "PRICE_LEVEL_MODERATE", "PRICE_LEVEL_EXPENSIVE", "PRICE_LEVEL_VERY_EXPENSIVE"];
+    }
+  };
+
+  const handlePrice = (e) => {
+    const priceLevel = getPriceLevel(e.target.value);
+    console.log(priceLevel);
+    setPrice(priceLevel);
   };
 
   const onSubmit = () => {
@@ -49,11 +73,14 @@ function App() {
   const getPlaces = async(location, cuisines) => {
     setError('');
     setLoading(true);
-    const textQuery = `${cuisines[0]} and ${cuisines[1]} restaurants in ${location}`;
+    const textQuery = `${cuisines[0]} and ${cuisines[1]} restaurants strictly in ${location}`;
     try {
       const response = await fetch("https://places.googleapis.com/v1/places:searchText", {
       method: "POST",
-      body: JSON.stringify({textQuery, pageSize: 10}),
+      body: JSON.stringify({
+        textQuery, 
+        pageSize: 10,
+        priceLevels: price}),
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
@@ -64,7 +91,11 @@ function App() {
         throw new Error(`Status: ${response.status}`);
       }
       const data = await response.json();
-      setEateries(data.places);
+      if (data.places && data.places.length > 0) {
+        setEateries(data.places);
+      } else {
+        setError('No restaurants found, try adjusting maximum price or location');
+      }
     } catch (error) {
         console.error(error.message);
         setError('Failed to find restaurants, try again');
@@ -92,7 +123,10 @@ function App() {
         {cuisines.length === 2 && (
           <div className='Eatery-card'>
             <strong style={{padding:"2%"}}>Enter current location</strong> 
-            <input type="text" className='search' value={location} onChange={handleChange} 
+            <input type="text" className='search' value={location} onChange={handleLocation} 
+              onKeyDown={(e) => e.key === 'Enter' && location.length > 3 && onSubmit()}/>
+            <strong style={{padding:"2%"}}>Enter maximum price per person</strong> 
+            <input type="text" className='search' onChange={handlePrice} 
               onKeyDown={(e) => e.key === 'Enter' && location.length > 3 && onSubmit()}/>
       </div>
       )}
